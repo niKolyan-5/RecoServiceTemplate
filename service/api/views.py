@@ -1,10 +1,13 @@
 from typing import List
 
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request, Depends
+from fastapi.security.api_key import APIKey
 from pydantic import BaseModel
 
 from service.api.exceptions import UserNotFoundError
 from service.log import app_logger
+
+from tests.api.test_views import test_api_key
 
 
 class RecoResponse(BaseModel):
@@ -32,6 +35,7 @@ async def get_reco(
     request: Request,
     model_name: str,
     user_id: int,
+    api_key: APIKey = Depends(test_api_key)
 ) -> RecoResponse:
     app_logger.info(f"Request for model: {model_name}, user_id: {user_id}")
 
