@@ -41,4 +41,3 @@ def create_app(config: ServiceConfig) -> FastAPI:
     add_exception_handlers(app)
 
     return app
-
