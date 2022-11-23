@@ -1,12 +1,21 @@
 from http import HTTPStatus
-from fastapi import HTTPException, Security
-from fastapi.security.api_key import APIKeyQuery, APIKeyCookie, APIKeyHeader, APIKey
-from starlette.testclient import TestClient
-from starlette.status import HTTP_403_FORBIDDEN
 
+from fastapi import HTTPException, Security
+from fastapi.security.api_key import (
+    APIKey,
+    APIKeyCookie,
+    APIKeyHeader,
+    APIKeyQuery,
+)
+from starlette.status import HTTP_403_FORBIDDEN
+from starlette.testclient import TestClient
+
+from service.models import (
+    model_names,  # импортируем список верных имен моделей
+)
 from service.settings import ServiceConfig
 
-GET_RECO_PATH = "/reco/{model_name}/{user_id}"
+GET_RECO_PATH = "/reco/{model_name}/{user_id}?access_token={api_key}"
 
 API_KEY = "FFF"
 API_KEY_NAME = "access_token"
@@ -30,7 +39,7 @@ def test_get_reco_success(
     service_config: ServiceConfig,
 ) -> None:
     user_id = 123
-    path = GET_RECO_PATH.format(model_name="some_model", user_id=user_id)
+    path = GET_RECO_PATH.format(model_name="some_model", user_id=user_id, api_key="FFF")
     with client:
         response = client.get(path)
     assert response.status_code == HTTPStatus.OK
@@ -44,7 +53,7 @@ def test_get_reco_for_unknown_user(
     client: TestClient,
 ) -> None:
     user_id = 10**10
-    path = GET_RECO_PATH.format(model_name="some_model", user_id=user_id)
+    path = GET_RECO_PATH.format(model_name="some_model", user_id=user_id, api_key="FFF")
     with client:
         response = client.get(path)
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -65,5 +74,28 @@ async def test_api_key(
         return api_key_cookie
     else:
         raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN, detail="Where is no key or it is wrong"
+            status_code=HTTP_403_FORBIDDEN, detail="There is no key or it is wrong"
         )
+
+def test_valid_model_name(  #здесь и далее тесты на верное/неверное имя модели
+    client: TestClient,
+) -> None:
+    user_id = 123
+    path = GET_RECO_PATH.format(model_name="some_model", user_id=user_id, api_key="FFF")
+    with client:
+        response = client.get(path)
+    assert response.status_code == 200
+    assert response.json() == {
+        "user_id": user_id,
+        "items": list(range(10))
+    }
+
+
+def test_invalid_model_name(
+    client: TestClient,
+) -> None:
+    user_id = 123
+    path = GET_RECO_PATH.format(model_name="invalid_model", user_id=user_id, api_key="FFF")
+    with client:
+        response = client.get(path)
+    assert response.status_code == 404

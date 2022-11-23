@@ -1,12 +1,14 @@
 from typing import List
 
-from fastapi import APIRouter, FastAPI, Request, Depends
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.security.api_key import APIKey
 from pydantic import BaseModel
 
 from service.api.exceptions import UserNotFoundError
 from service.log import app_logger
-
+from service.models import (
+    model_names,  # импортируем список верных имен моделей
+)
 from tests.api.test_views import test_api_key
 
 
@@ -37,7 +39,11 @@ async def get_reco(
     user_id: int,
     api_key: APIKey = Depends(test_api_key)
 ) -> RecoResponse:
-    app_logger.info(f"Request for model: {model_name}, user_id: {user_id}")
+    if model_name in model_names:
+        app_logger.info(f"Request for model: {model_name}, user_id: {user_id}")
+    else:
+        raise HTTPException(status_code=404, detail="Model is not valid") # добавили исключение, если имя модели не является верным
+
 
     # Write your code here
 
