@@ -42,7 +42,8 @@ async def get_reco(
     if model_name in model_names:
         app_logger.info(f"Request for model: {model_name}, user_id: {user_id}")
     else:
-        raise HTTPException(status_code=404, detail="Model is not valid")  # исключение, если имя модели не является верным
+        # исключение, если имя модели не является верным
+        raise HTTPException(status_code=404, detail="Model is not valid")
 
     if user_id > 10**9:
         raise UserNotFoundError(error_message=f"User {user_id} not found")

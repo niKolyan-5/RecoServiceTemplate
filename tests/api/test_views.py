@@ -13,10 +13,6 @@ API_KEY = "FFF"
 API_KEY_NAME = "access_token"
 COOKIE_DOMAIN = "localtest.me"
 
-api_key_query = APIKeyQuery(name=API_KEY_NAME, auto_error=False)
-api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
-api_key_cookie = APIKeyCookie(name=API_KEY_NAME, auto_error=False)
-
 
 def test_health(
     client: TestClient,
@@ -59,21 +55,24 @@ def test_get_reco_for_unknown_user(
 
 
 async def test_api_key(
-    api_key_query: str = Security(api_key_query),
-    api_key_header: str = Security(api_key_header),
-    api_key_cookie: str = Security(api_key_cookie),
+    api_key_query: str = Security(APIKeyQuery(name=API_KEY_NAME,
+                                              auto_error=False)),
+    api_key_header: str = Security(APIKeyHeader(name=API_KEY_NAME,
+                                                auto_error=False)),
+    api_key_cookie: str = Security(APIKeyCookie(name=API_KEY_NAME,
+                                                auto_error=False)),
 ):
 
     if api_key_query == API_KEY:
         return api_key_query
-    elif api_key_header == API_KEY:
+    if api_key_header == API_KEY:
         return api_key_header
-    elif api_key_cookie == API_KEY:
+    if api_key_cookie == API_KEY:
         return api_key_cookie
-    else:
-        raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN, detail="There is no key or it is wrong"
-        )
+    raise HTTPException(
+        status_code=HTTP_403_FORBIDDEN,
+        detail="There is no key or it is wrong"
+    )
 
 
 # здесь и далее тесты на верное/неверное имя модели
