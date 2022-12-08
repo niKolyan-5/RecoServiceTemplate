@@ -1,3 +1,4 @@
+import numpy as np
 from typing import List
 
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
@@ -6,10 +7,11 @@ from pydantic import BaseModel
 
 from service.api.exceptions import UserNotFoundError
 from service.log import app_logger
-from service.models import (
-    model_names,  # импортируем список верных имен моделей
-)
+from service.models import model_names  # импортируем список верных имен моделей
+
 from tests.api.test_views import test_api_key
+
+from ordinarypopular import ordinary_popular, dataset
 
 
 class RecoResponse(BaseModel):
@@ -49,8 +51,18 @@ async def get_reco(
         raise UserNotFoundError(error_message=f"User {user_id} not found")
 
     k_recs = request.app.state.k_recs
-    reco = list(range(k_recs))
-    return RecoResponse(user_id=user_id, items=reco)
+    # выдача рекомендаций
+    try:
+        reco = ordinary_popular.recommend(
+            np.array([user_id]), 
+            dataset=dataset, 
+            k=k_recs, 
+            filter_viewed=False  # True - throw away some items for each user
+        )['item_id'].to_list()
+    except Exception:
+        reco = list(range(k_recs))
+    finally:
+        return RecoResponse(user_id=user_id, items=reco)
 
 
 def add_views(app: FastAPI) -> None:
