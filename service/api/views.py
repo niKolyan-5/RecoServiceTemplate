@@ -1,17 +1,17 @@
-import numpy as np
 from typing import List
 
+import numpy as np
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.security.api_key import APIKey
 from pydantic import BaseModel
 
+from ordinarypopular import dataset, ordinary_popular
 from service.api.exceptions import UserNotFoundError
 from service.log import app_logger
-from service.models import model_names  # импортируем список верных имен моделей
-
+from service.models import (
+    model_names,  # импортируем список верных имен моделей
+)
 from tests.api.test_views import test_api_key
-
-from ordinarypopular import ordinary_popular, dataset
 
 
 class RecoResponse(BaseModel):
@@ -54,9 +54,9 @@ async def get_reco(
     # выдача рекомендаций
     try:
         reco = ordinary_popular.recommend(
-            np.array([user_id]), 
-            dataset=dataset, 
-            k=k_recs, 
+            np.array([user_id]),
+            dataset=dataset,
+            k=k_recs,
             filter_viewed=False  # True - throw away some items for each user
         )['item_id'].to_list()
     except Exception:
