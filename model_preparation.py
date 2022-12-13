@@ -1,5 +1,6 @@
 import dill
 import pandas as pd
+import numpy as np
 from rectools import Columns
 from rectools.dataset import Dataset
 
@@ -13,7 +14,6 @@ interactions.rename(columns={'last_watch_dt': Columns.Datetime,
                     inplace=True) 
 
 interactions['datetime'] = pd.to_datetime(interactions['datetime'])
-
 
 _, bins = pd.qcut(items["release_year"], 10, retbins=True)
 labels = bins[:-1]
@@ -43,6 +43,16 @@ dataset = Dataset.construct(
       cat_item_features=['genre', 'release_year']
 )
 
-#загрузка модели из pop.dill
+#загрузка моделей из файлов
 with open('pop.dill', 'rb') as f:
     ordinary_popular = dill.load(f)
+
+with open('userknn.dill', 'rb') as f:
+    userknn = dill.load(f)
+
+popular_recommendation = ordinary_popular.recommend(
+            np.array([123]),
+            dataset=dataset,
+            k=10,
+            filter_viewed=False
+        )['item_id'].to_list()

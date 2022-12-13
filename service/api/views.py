@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.security.api_key import APIKey
 from pydantic import BaseModel
 
-from ordinarypopular import dataset, ordinary_popular
+from model_preparation import dataset, userknn, popular_recommendation
 from service.api.exceptions import UserNotFoundError
 from service.log import app_logger
 from service.models import (
@@ -53,14 +53,16 @@ async def get_reco(
     k_recs = request.app.state.k_recs
     # выдача рекомендаций
     try:
-        reco = ordinary_popular.recommend(
+        reco = userknn.recommend(
             np.array([user_id]),
             dataset=dataset,
             k=k_recs,
-            filter_viewed=False  # True - throw away some items for each user
+            filter_viewed=True
         )['item_id'].to_list()
+        if len(reco) < k_recs:
+            reco.extend(popular_recommendation[:(k_recs - len(reco))])
     except Exception:
-        reco = list(range(k_recs))
+        reco = popular_recommendation
     finally:
         return RecoResponse(user_id=user_id, items=reco)
 
