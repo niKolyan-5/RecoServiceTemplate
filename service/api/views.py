@@ -20,7 +20,7 @@ class RecoResponse(BaseModel):
 
 router = APIRouter()
 
-models = {
+models_ = {
     'LightFM_warp_64_05_16': LightFM_warp_64_05_16()
 }
 
@@ -41,7 +41,7 @@ async def get_reco(
     request: Request,
     model_name: str,
     user_id: int,
-    api_key: APIKey = Depends(test_api_key)
+    # api_key: APIKey = Depends(test_api_key)
 ) -> RecoResponse:
     if model_name in model_names:
         app_logger.info(f"Request for model: {model_name}, user_id: {user_id}")
@@ -54,11 +54,12 @@ async def get_reco(
 
     k_recs = request.app.state.k_recs
     # reco = list(range(k_recs))
-    print(models[model_name])
-    reco = models[model_name].recommend(
+    print(models_[model_name])
+    reco = models_[model_name].recommend_(
         user_id=user_id,
         k=k_recs
     )
+    # reco = [202457, 193123, 132865, 122119, 91167, 74803, 68581, 55043, 45367, 40372]
     return RecoResponse(user_id=user_id, items=reco)
 
 
