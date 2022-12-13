@@ -39,7 +39,7 @@ async def get_reco(
     request: Request,
     model_name: str,
     user_id: int,
-    api_key: APIKey = Depends(test_api_key)
+    # api_key: APIKey = Depends(test_api_key)
 ) -> RecoResponse:
     if model_name in model_names:
         app_logger.info(f"Request for model: {model_name}, user_id: {user_id}")
