@@ -3,7 +3,7 @@ import typing as tp
 from pydantic import BaseModel
 
 # условный список зарегистрированных моделей
-model_names = ['some_model', 'ordinary_popular', 'user_knn']
+model_names = ['some_model', 'ordinary_popular', 'userknn']
 
 
 class Error(BaseModel):
