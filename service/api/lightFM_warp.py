@@ -37,7 +37,7 @@ class LightFM_off:
         
         # print(self.model)
         try:
-            reco = self.model[user_id]
+            reco = self.model['item_id'][user_id]
         except:
             reco = [10440, 9728, 15297, 13865, 12192, 341, 4151, 3734, 12360, 7793]
 
