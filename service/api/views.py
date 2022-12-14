@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.security.api_key import APIKey
 from pydantic import BaseModel
 
-from model_preparation import popular_recos, bm25model
+from service.api.model_preparation import popular_recos, bm25model
 from service.api.exceptions import UserNotFoundError
 from service.log import app_logger
 from service.models import (
