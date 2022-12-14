@@ -55,11 +55,14 @@ async def get_reco(
     try:
         reco = bm25model[user_id]
         if len(reco) < k_recs:
-            reco.extend(popular_recos[:(k_recs - len(reco))])
+            for r in popular_recos:
+                if not r in reco:
+                    reco += [r]
+            # reco.extend()
     except Exception:
         reco = popular_recos
     finally:
-        return RecoResponse(user_id=user_id, items=reco)
+        return RecoResponse(user_id=user_id, items=reco[:k_recs])
 
 
 def add_views(app: FastAPI) -> None:
