@@ -10,7 +10,7 @@ from service.models import (
     model_names,  # импортируем список верных имен моделей
 )
 from tests.api.test_views import test_api_key
-from service.api.lightFM_warp import LightFM_warp_64_05_16
+from service.api.lightFM_warp import LightFM_warp_64_05_16, LightFM_off
 
 
 class RecoResponse(BaseModel):
@@ -21,7 +21,8 @@ class RecoResponse(BaseModel):
 router = APIRouter()
 
 models_ = {
-    'LightFM_warp_64_05_16': LightFM_warp_64_05_16()
+    'LightFM_warp_64_05_16': LightFM_warp_64_05_16(),
+    'LightFM': LightFM_off()
 }
 
 
@@ -53,13 +54,12 @@ async def get_reco(
         raise UserNotFoundError(error_message=f"User {user_id} not found")
 
     k_recs = request.app.state.k_recs
-    # reco = list(range(k_recs))
-    print(models_[model_name])
+
+    # print(models_[model_name])
     reco = models_[model_name].recommend_(
         user_id=user_id,
         k=k_recs
     )
-    # reco = [202457, 193123, 132865, 122119, 91167, 74803, 68581, 55043, 45367, 40372]
     return RecoResponse(user_id=user_id, items=reco)
 
 

@@ -18,9 +18,29 @@ class LightFM_warp_64_05_16():
         try:
             reco = self.model.recommend([user_id], dataset=self.dataset, k=k, filter_viewed=True)
             reco = list(reco['item_id'])
-            print(reco)
+            # print(reco)
         except:
             # reco = self.popular_recs_all_time
             reco = self.popular_recs_month
+
+        return reco
+
+
+class LightFM_off:
+    def __init__(self):
+        super().__init__()
+
+        with open('service/api/weights/LFM_model.pickle', 'rb') as f:
+            self.model = pickle.load(f)
+
+    def recommend_(self, user_id: int, k: int = 10):
+        
+        # print(self.model)
+        try:
+            reco = self.model[user_id]
+        except:
+            reco = [10440, 9728, 15297, 13865, 12192, 341, 4151, 3734, 12360, 7793]
+
+        print('RECO', reco)
 
         return reco
