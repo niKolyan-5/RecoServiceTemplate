@@ -1,12 +1,11 @@
 from typing import List
 
-import numpy as np
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.security.api_key import APIKey
 from pydantic import BaseModel
 
-from service.api.model_preparation import popular_recos, bm25model
 from service.api.exceptions import UserNotFoundError
+from service.api.model_preparation import bm25model, popular_recos
 from service.log import app_logger
 from service.models import (
     model_names,  # импортируем список верных имен моделей
@@ -56,9 +55,10 @@ async def get_reco(
         reco = bm25model[user_id]
         if len(reco) < k_recs:
             for r in popular_recos:
-                if not r in reco:
-                    reco += [r]
-            # reco.extend()
+                if r not in reco:
+                    reco.append(r)
+                if len(reco) == k_recs:
+                    break
     except Exception:
         reco = popular_recos
     finally:

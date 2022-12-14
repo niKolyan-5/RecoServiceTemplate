@@ -1,6 +1,6 @@
 import dill
 
-#загрузка моделей из файлов
+# загрузка моделей из файлов
 with open('service/api/models/popular_model.dill', 'rb') as f:
     popular_recos = dill.load(f)
 
