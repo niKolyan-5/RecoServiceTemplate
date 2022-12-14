@@ -47,8 +47,10 @@ dataset = Dataset.construct(
 with open('pop.dill', 'rb') as f:
     ordinary_popular = dill.load(f)
 
-with open('userknn.dill', 'rb') as f:
-    userknn = dill.load(f)
+with open('userknndict.dill', 'rb') as f:
+    userknndict = dill.load(f)
+
+userknndict = userknndict['item_id']
 
 popular_recommendation = ordinary_popular.recommend(
             np.array([123]),
