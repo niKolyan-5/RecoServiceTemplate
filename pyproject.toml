@@ -20,6 +20,7 @@ orjson = "^3.7.7"
 starlette = "^0.14.2"
 dill = "^0.3.6"
 lightgbm = "^3.3.4"
+pandas = "^1.5.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
@@ -29,6 +30,7 @@ isort = "^5.8.0"
 bandit = "^1.7.0"
 flake8 = "^3.9.2"
 pylint = "~2.8.3"
+ipykernel = "^6.20.0"
 
 [build-system]
 requires = ["poetry>=1.0.5"]

@@ -10,7 +10,7 @@ from service.models import (
     model_names,  # импортируем список верных имен моделей
 )
 # from tests.api.test_views import test_api_key
-from service.ranker import LGBMRankerModel
+from service.ranker import LGBMRankerModel, LightFM_warp_64_05_16_
 
 
 class RecoResponse(BaseModel):
@@ -21,7 +21,7 @@ class RecoResponse(BaseModel):
 router = APIRouter()
 
 models_ = {
-    # 'LightFM_warp_64_05_16': LightFM_warp_64_05_16(),
+    # 'LightFM': LightFM_warp_64_05_16_(),
     'LGBMRankerModel': LGBMRankerModel()
 }
 
@@ -54,13 +54,12 @@ async def get_reco(
         raise UserNotFoundError(error_message=f"User {user_id} not found")
 
     k_recs = request.app.state.k_recs
-
-    # print(models_[model_name])
-    reco = models_[model_name].recommend_(
+    
+    lfm_reco = models_[model_name].recommend_(
         user_id=user_id,
         k=k_recs
     )
-    return RecoResponse(user_id=user_id, items=reco)
+    return RecoResponse(user_id=user_id, k=k_recs, recs=lfm_reco)
 
 
 def add_views(app: FastAPI) -> None:
